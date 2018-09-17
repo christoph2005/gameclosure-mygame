@@ -1,19 +1,62 @@
-import ui.TextView as TextView;
+// devkit imports
+import device;
+import ui.StackView as StackView;
+
+import src.TitleScreen as TitleScreen;
+import src.GameScreen as GameScreen;
 
 exports = Class(GC.Application, function () {
 
-  this.initUI = function () {
+// Application structure taken from GameClosure's whack-a-mole example...
 
-    this.tvHelloWorld = new TextView({
-      superview: this.view,
-      text: 'Hello, world!',
-      color: 'white',
+/* Run after the engine is created and the scene graph is in
+  * place, but before the resources have been loaded.
+  */
+  this.initUI = function () {
+     
+    var titlescreen = new TitleScreen(),
+        gamescreen = new GameScreen();
+
+    this.view.style.backgroundColor = '#008a42';
+
+    // Add a new StackView to the root of the scene graph
+    // create everything at size 320x480, then scale so to
+    // fit horizontally
+    var rootView = new StackView({
+      superview: this,
       x: 0,
-      y: 100,
-      width: this.view.style.width,
-      height: 100
+      y: 0,
+      width: 320,
+      height: 480,
+      clip: true,
+      scale: device.width / 320
     });
 
+   rootView.push(titlescreen);
+   
+   this.rootView = rootView;
+
+   //----> Does sound even work? // var sound = soundcontroller.getSound();
+   
+
+   /* Listen for an event dispatched by the title screen when
+    * the start button has been pressed. Hide the title screen,
+    * show the game screen, then dispatch a custom event to the
+    * game screen to start the game.
+    */
+    titlescreen.on('titlescreen:start', function () {
+   //   sound.play('levelmusic');
+      rootView.push(gamescreen);
+      gamescreen.emit('app:start');
+    });
+
+   /* When the game screen has signalled that the game is over,
+    * show the title screen so that the user may play the game again.
+    */
+    gamescreen.on('gamescreen:end', function () {
+      // ---> More sound related stuff  //sound.stop('levelmusic');
+      rootView.pop();
+    });
   };
 
   this.launchUI = function () {
