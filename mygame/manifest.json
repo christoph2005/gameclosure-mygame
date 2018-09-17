@@ -1,7 +1,7 @@
 {
   "appID": "fe4dcaef6dd44def918636a11153bc42",
   "dependencies": {
-    "devkit-core": "https://github.com/gameclosure/devkit-core#"
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v4.5.3"
   },
   "shortName": "mygame",
   "studio": {
