@@ -1,13 +1,13 @@
 /*
  * The game screen is a singleton view that consists of
- * a scoreboard and a collection of molehills.
+ * a scoreboard and a bubbleshooter game.
  */
 
 import animate;
 import ui.View;
 import ui.ImageView;
 import ui.TextView;
-//import src.MoleHill as MoleHill;
+import src.Gem as Gem;
 
 /* Some game constants.
  */
@@ -18,25 +18,43 @@ var score = 0,
 		game_on = false,
 		game_length = 20000, //20 secs
 		countdown_secs = game_length / 1000,
-		lang = 'en';
+		lang = 'en',
+      sw = 768, sh = 1364;
 
 /* The GameScreen view is a child of the main application.
- * By adding the scoreboard and the molehills as it's children,
+ * By adding the scoreboard and the gamescreen as it's children,
  * everything is visible in the scene graph.
  */
 exports = Class(ui.View, function (supr) {
    
 	this.init = function (opts) {
-      var sw = 768, sh = 1364;
 		opts = merge(opts, {
 			x: 0,
 			y: 0,
 			width: sw,
-			height: sh     
+			height: sh
 		});
 
 		supr(this, 'init', [opts]);
       this.style.backgroundColor = '#4B0082';
+      
+      this._bg = new ui.ImageView({
+         superview: this,
+			layout: "box",
+         width: sw,
+         height: sh,
+         image: "resources/images/bubbles/ui/bg1_center.png",
+         zIndex: -999999
+      });
+      this._bgh = new ui.ImageView({
+         superview: this,
+			layout: "box",
+         width: sw,
+         height: 275,
+         image: "resources/images/bubbles/ui/bg1_header.png",
+         zIndex: 999999
+      });
+      
 
 		this.build();
 	};
@@ -49,6 +67,7 @@ exports = Class(ui.View, function (supr) {
 		 */
 		this.on('app:start', start_game_flow.bind(this));
       var that = this;
+     
 
 		/* The scoreboard displays the "ready, set, go" message,
 		 * the current score, and the end game message. We'll set
@@ -69,11 +88,6 @@ exports = Class(ui.View, function (supr) {
 			color: '#FFFFFF'
 		});
 
-		var x_offset = 5;
-		var y_offset = 160;
-		var y_pad = 25;
-		var layout = [[1, 0, 1], [0, 1, 0], [1, 0, 1]];
-
 		this.style.width = 768;
 		this.style.height = 1000;
 
@@ -89,6 +103,11 @@ exports = Class(ui.View, function (supr) {
 			color: '#FFFFFF',
 			opacity: 0.7
 		});
+      
+      this._gems = [];
+      var gem = new Gem();
+      this._gems.push(gem);
+      this.addSubview(gem);
 	};
 });
 
@@ -142,13 +161,12 @@ function play_game () {
 	}), game_length * 0.75);
 }
 
-/* Pick a random, non-active, mole from our molehills.
- */
+/* tick*/
 function tick () {
+   
 }
 
-/* Updates the countdown timer, pad out leading zeros.
- */
+/* Updates the countdown timer, pad out leading zeros.*/
 function update_countdown () {
 	countdown_secs -= 1;
 	this._countdown.setText(":" + (("00" + countdown_secs).slice(-2)));

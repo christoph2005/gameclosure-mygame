@@ -1,7 +1,7 @@
 // devkit imports
 import device;
 import ui.StackView as StackView;
-
+import ui.ImageView;
 import src.TitleScreen as TitleScreen;
 import src.GameScreen as GameScreen;
 
@@ -24,7 +24,7 @@ exports = Class(GC.Application, function () {
     var screenWidth = 768;
     var screenHeight = 1364;
     var scale = device.width / screenWidth;
-    var y = -1*(device.height-scale*screenHeight)/2;
+    var y = (device.height-scale*screenHeight)/2;
     var rootView = new StackView({
       superview: this,
       x: 0,
@@ -38,6 +38,10 @@ exports = Class(GC.Application, function () {
    rootView.push(titlescreen);
    
    this.rootView = rootView;
+   
+   // ---> For now, please press "start" for me.../
+      rootView.push(gamescreen);
+      gamescreen.emit('app:start');
 
    //----> Does sound even work? // var sound = soundcontroller.getSound();
    
