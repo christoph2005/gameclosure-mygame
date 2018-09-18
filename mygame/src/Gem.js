@@ -27,16 +27,29 @@ exports = Class(ui.View, function (supr) {
 	 * Layout
 	 */
 	this.build = function () {
+      var w = blue_img.getWidth(),
+          h = blue_img.getHeight(),
+          sx = 0-w,
+          sy = 0-h;
 		var blue = new ui.ImageView({
 			superview: this,
 			image: blue_img,
-			x: 0,
-			y: 0,
-			width: blue_img.getWidth(),
-			height: blue_img.getHeight()
+			x: sx,
+			y: sy,
+         scale:1,
+			width: w,
+			height: h
 		});
-
-
+		var green = new ui.ImageView({
+			superview: this,
+			image: green_img,
+			x: sx,
+			y: sy,
+         scale:1,
+			width: w,
+			height: h
+		});
+      console.log(green);
 		//var sound = soundcontroller.getSound();
 
 	};
