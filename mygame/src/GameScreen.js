@@ -16,8 +16,7 @@ var score = 0,
 		hit_value = 1,
 		mole_interval = 600,
 		game_on = false,
-		//game_length = 20000, //20 secs
-		game_length = 20000/5, //(20 secs / 5)
+		game_length = 20000, //20 secs
 		countdown_secs = game_length / 1000,
 		lang = 'en';
 
@@ -26,15 +25,18 @@ var score = 0,
  * everything is visible in the scene graph.
  */
 exports = Class(ui.View, function (supr) {
+   
 	this.init = function (opts) {
+      var sw = 768, sh = 1364;
 		opts = merge(opts, {
 			x: 0,
 			y: 0,
-			width: 320,
-			height: 480,
+			width: sw,
+			height: sh     
 		});
 
 		supr(this, 'init', [opts]);
+      this.style.backgroundColor = '#4B0082';
 
 		this.build();
 	};
@@ -46,6 +48,7 @@ exports = Class(ui.View, function (supr) {
 		/* The start event is emitted from the start button via the main application.
 		 */
 		this.on('app:start', start_game_flow.bind(this));
+      var that = this;
 
 		/* The scoreboard displays the "ready, set, go" message,
 		 * the current score, and the end game message. We'll set
@@ -56,10 +59,10 @@ exports = Class(ui.View, function (supr) {
 			superview: this,
 			x: 0,
 			y: 15,
-			width: 320,
-			height: 50,
+			width: 768,
+			height: 140,
 			autoSize: false,
-			size: 38,
+			size: 120,
 			verticalAlign: 'middle',
 			horizontalAlign: 'center',
 			wrap: false,
@@ -71,40 +74,18 @@ exports = Class(ui.View, function (supr) {
 		var y_pad = 25;
 		var layout = [[1, 0, 1], [0, 1, 0], [1, 0, 1]];
 
-		this.style.width = 320;
-		this.style.height = 480;
+		this.style.width = 768;
+		this.style.height = 1000;
 
-		this._molehills = [];
-/*
-		for (var row = 0, len = layout.length; row < len; row++) {
-			for (var col = 0; col < len; col++) {
-				if (layout[row][col] !== 0) {
-					var molehill = new MoleHill();
-					molehill.style.x = x_offset + col * molehill.style.width;
-					molehill.style.y = y_offset + row * (molehill.style.height + y_pad);
-					this.addSubview(molehill);
-					this._molehills.push(molehill);
-
-					//update score on hit event
-					molehill.on('molehill:hit', bind(this, function () {
-						if (game_on) {
-							score = score + hit_value;
-							this._scoreboard.setText(score.toString());
-						}
-					}));
-				}
-			}
-		}
-*/
 		//Set up countdown timer
 		this._countdown = new ui.TextView({
 			superview: this._scoreboard,
 			visible: false,
-			x: 260,
+			x: 600,
 			y: -5,
-			width: 50,
-			height: 50,
-			size: 24,
+			width: 120,
+			height: 120,
+			size: 120   ,
 			color: '#FFFFFF',
 			opacity: 0.7
 		});
@@ -119,13 +100,12 @@ exports = Class(ui.View, function (supr) {
  */
 function start_game_flow () {
 	var that = this;
-
-	animate(that._scoreboard).wait(1000)
+	animate(that._scoreboard).wait(500)
 		.then(function () {
 			that._scoreboard.setText(text.READY);
-		}).wait(1500).then(function () {
+		}).wait(300).then(function () {
 			that._scoreboard.setText(text.SET);
-		}).wait(1500).then(function () {
+		}).wait(300).then(function () {
 			that._scoreboard.setText(text.GO);
 			//start game ...
 			game_on = true;
@@ -154,7 +134,7 @@ function play_game () {
 	setTimeout(bind(this, function () {
 		this._scoreboard.setText(score.toString());
 		this._countdown.style.visible = true;
-	}), game_length * 0.25);
+	}), 333);
 
 	//Running out of time! Set countdown timer red.
 	setTimeout(bind(this, function () {
@@ -165,15 +145,6 @@ function play_game () {
 /* Pick a random, non-active, mole from our molehills.
  */
 function tick () {
-	var len = this._molehills.length,
-			molehill = this._molehills[Math.random() * len | 0];
-
-	while (molehill && molehill.activeMole) {
-		molehill = this._molehills[Math.random() * len | 0];
-	}
-   if (molehill){
-      molehill.showMole();
-   }
 }
 
 /* Updates the countdown timer, pad out leading zeros.
@@ -205,28 +176,21 @@ function end_game_flow () {
 	//check for high-score and do appropriate animation
 	if (isHighScore) {
 		high_score = score;
-		this._molehills.forEach(function (molehill) {
-			molehill.endAnimation();
-		});
 	} else {
-		var i = (this._molehills.length-1) / 2 | 0; //just center mole
-      if (this._molehills[i]){
-         this._molehills[i].endAnimation(true);
-      }
 	}
 
 	this._scoreboard.setText(end_msg);
 
 	//slight delay before allowing a tap reset
-	setTimeout(emit_endgame_event.bind(this), 2000);
+	setTimeout(emit_endgame_event.bind(this), 200);
 }
 
 /* Tell the main app to switch back to the title screen.
  */
 function emit_endgame_event () {
 	this.once('InputSelect', function () {
-		this.emit('gamescreen:end');
 		reset_game.call(this);
+		this.emit('gamescreen:end');
 	});
 }
 
@@ -236,9 +200,6 @@ function reset_game () {
 	score = 0;
 	countdown_secs = game_length / 1000;
 	this._scoreboard.setText('');
-	this._molehills.forEach(function (molehill) {
-		molehill.resetMole();
-	});
 	this._scoreboard.updateOpts({
 		x: 0,
 		fontSize: 38,
@@ -274,7 +235,7 @@ var localized_strings = {
 	en: {
 		READY: "Ready ...",
 		SET: "Set ...",
-		GO: "Whack that Mole!",
+		GO: "GO!",
 		MOLE: "mole",
 		MOLES: "moles",
 		END_MSG_START: "You whacked",

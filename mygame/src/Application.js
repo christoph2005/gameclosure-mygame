@@ -13,23 +13,26 @@ exports = Class(GC.Application, function () {
   * place, but before the resources have been loaded.
   */
   this.initUI = function () {
-     
     var titlescreen = new TitleScreen(),
         gamescreen = new GameScreen();
 
-    this.view.style.backgroundColor = '#008a42';
+    this.view.style.backgroundColor = '#008a42  ';
 
     // Add a new StackView to the root of the scene graph
     // create everything at size 320x480, then scale so to
     // fit horizontally
+    var screenWidth = 768;
+    var screenHeight = 1364;
+    var scale = device.width / screenWidth;
+    var y = -1*(device.height-scale*screenHeight)/2;
     var rootView = new StackView({
       superview: this,
       x: 0,
-      y: 0,
-      width: 320,
-      height: 480,
+      y:y,
+      width: screenWidth,
+      height: screenHeight,
       clip: true,
-      scale: device.width / 320
+      scale: scale     
     });
 
    rootView.push(titlescreen);
@@ -53,14 +56,17 @@ exports = Class(GC.Application, function () {
    /* When the game screen has signalled that the game is over,
     * show the title screen so that the user may play the game again.
     */
+    var view = this;
     gamescreen.on('gamescreen:end', function () {
       // ---> More sound related stuff  //sound.stop('levelmusic');
-      rootView.pop();
+      if(rootView.stack.length > 1){
+         rootView.pop()
+      }
+         view.style.backgroundColor = '#008a42';
     });
   };
 
   this.launchUI = function () {
-
   };
 
 });

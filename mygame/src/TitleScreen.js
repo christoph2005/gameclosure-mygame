@@ -4,17 +4,24 @@ import device;
 
 exports = Class(ui.View, function (supr) {
   this.init = function (opts) {
+    var view = this;
+    var sw = 768;
+    var sh = 1364;
+    
     opts = merge(opts, {
+      x: 0,
+      y: 0,
+      width: sw,
+      height: sh,
     });
     supr(this, 'init', [opts]);
     
-    var sw = 320;
-    var sh = 480; 
-    
+    view
+    .style.backgroundColor = '#006400';
+      
     var width = 0.8 * sw;
     var x = sw/2 - sw/2;
     var y = sh/2 - 50;
-    console.log(y);
     
     this.startbutton = new TextView({
       superview: this,
@@ -27,8 +34,10 @@ exports = Class(ui.View, function (supr) {
       height: 100
     });
     
+    
     this.startbutton.on('InputSelect', bind(this, function () {
       this.emit('titlescreen:start');
+      
     }));
     
   };
