@@ -8,6 +8,7 @@ import ui.View;
 import ui.ImageView;
 import ui.TextView;
 import src.Gem as Gem;
+import src.Cannon as Cannon;
 
 /* Some game constants.
  */
@@ -85,7 +86,8 @@ exports = Class(ui.View, function (supr) {
 			verticalAlign: 'middle',
 			horizontalAlign: 'center',
 			wrap: false,
-			color: '#FFFFFF'
+			color: '#FFFFFF',
+         zIndex: 9999999
 		});
 
 		this.style.width = 768;
@@ -101,13 +103,19 @@ exports = Class(ui.View, function (supr) {
 			height: 120,
 			size: 120   ,
 			color: '#FFFFFF',
-			opacity: 0.7
+			opacity: 0.7,
+         zIndex: 99999999
 		});
       
       this._gems = [];
       var gem = new Gem();
       this._gems.push(gem);
       this.addSubview(gem);
+      
+      var cannon = new Cannon();
+      this.addSubview(cannon);
+      
+      
 	};
 });
 

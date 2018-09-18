@@ -27,7 +27,6 @@ exports = Class(ui.View, function (supr) {
 	 * Layout
 	 */
 	this.build = function () {
-      var that = this;
       function gem(color){
          var w = blue_img.getWidth(),
              h = blue_img.getHeight(),
@@ -55,11 +54,47 @@ exports = Class(ui.View, function (supr) {
             height: h
          });
       }
-		var blue = new gem('blue');
-      this.addSubview(blue);
-      blue.style.x = blue.style.x+500;
-      console.log(blue);
+		this.gemView = new gem('blue');
+      this._animator = animate(this.gemView);
+      this.addSubview(this.gemView);
+      /*
+      this.blue.style.x = this.blue.style.x+500;
+      console.log(this.blue);
+      */
+     
 		//var sound = soundcontroller.getSound();
+      
+      // Template for other move functions
+      this.move = bind(this,function() {
+         return this._animator.now({y: 400}, 200, animate.EASE_OUT);
+      })
+      
+      // Move instantly
+      this.moveTo = bind(this,function(x,y) {
+         return this._animator.now({x: x, y: y}, 0, animate.linear);
+      })
+      
+      // Move over time
+      this.moveToFor = bind(this,function(x,y,t) {
+         return this._animator.now({x: x, y: y}, t, animate.linear);
+      })
+      
+      /*
+        if (this.activeMole === false) {
+    this.activeMole = true;
+    this.activeInput = true;
+
+    this._animator.now({y: mole_up}, 500, animate.EASE_IN)
+      .wait(1000).then(bind(this, function () {
+        this.activeInput = false;
+      })).then({y: mole_down}, 200, animate.EASE_OUT)
+      .then(bind(this, function () {
+        this.activeMole = false;
+      }));
+  }
+};
+*/
 
 	};
+   
 });
