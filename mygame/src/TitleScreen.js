@@ -14,6 +14,7 @@ exports = Class(ui.View, function (supr) {
       width: sw,
       height: sh,
     });
+   
     supr(this, 'init', [opts]);
     
     view

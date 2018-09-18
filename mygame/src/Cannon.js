@@ -16,11 +16,7 @@ exports = Class(ui.View, function (supr) {
 		});
 
 		supr(this, 'init', [opts]);
-      
-      this.on('InputSelect', function() {
-         console.log("We just got a click!");
-      });
-      
+     
 		this.build();
 	};
 
@@ -47,18 +43,15 @@ exports = Class(ui.View, function (supr) {
          superview: this.view,
          image: top_img,
          x: this.cannon_base.style.x,
-         y: this.cannon_base.style.y,
+         y: this.cannon_base.style.y-600,
          anchorX: width/2,
          anchorY: height/1.5,
          scale:0.75,
          width: width,
          height: height
       });
-      
       this.addSubview(this.cannon_top);
       
-      this._animator = animate(this.cannon_top);
-     
 		//var sound = soundcontroller.getSound();
       
       // Template for other move functions
@@ -88,8 +81,11 @@ exports = Class(ui.View, function (supr) {
       });
       
       this.rotateTo = bind(this,function(x,y,t){
+         if (x>0&& y>0){
             return animate(this.cannon_top).
-            now({r: Math.atan2(0-y,x)}, t, animate.linear);
+            now({r: Math.atan2(y,x)}, t, animate.linear);
+         } else {
+         }
       });
       
 	};

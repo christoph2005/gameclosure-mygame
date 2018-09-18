@@ -116,6 +116,23 @@ exports = Class(ui.View, function (supr) {
       this.addSubview(cannon);
       
       
+      this.inputView = new ui.View({
+         superview: this.view,
+         x:0,
+         y:0,
+         width:sw,
+         height:sh,
+         zIndex: 99999999999
+      });
+      this.addSubview(this.inputView);
+      
+      this.inputView.on('InputMove', bind(this, function (event,point) {
+         this.mouseX = point.x;
+         this.mouseY = point.y;
+         cannon.rotateTo(this.mouseX,this.mouseY,100);
+      }));
+      
+      
 	};
 });
 
@@ -206,9 +223,10 @@ function end_game_flow () {
 	}
 
 	this._scoreboard.setText(end_msg);
-
+/* Just don't bother "ending" the game for now...
 	//slight delay before allowing a tap reset
 	setTimeout(emit_endgame_event.bind(this), 200);
+   */
 }
 
 /* Tell the main app to switch back to the title screen.
