@@ -26,7 +26,7 @@ exports = Class(ui.View, function (supr) {
 	this.build = function () {
       
       var width = base_img.getWidth(),
-          height = base_img.getHeight()+top_img.getHeight()/2;
+          height = base_img.getHeight();
           
 		this.cannon_base = new ui.ImageView({
          superview: this.view,
@@ -35,20 +35,25 @@ exports = Class(ui.View, function (supr) {
          y: 1364-height,
          scale:1,
          width: width,
-         height: height
+         height: height,
+         zIndex:-1
       });
       this.addSubview(this.cannon_base);
+      
+      var width = base_img.getWidth(),
+          height = base_img.getHeight()
       
 		this.cannon_top = new ui.ImageView({
          superview: this.view,
          image: top_img,
-         x: this.cannon_base.style.x,
-         y: this.cannon_base.style.y-600,
-         anchorX: width/2,
-         anchorY: height/1.5,
-         scale:0.75,
+         height: height*3,
          width: width,
-         height: height
+         x: this.cannon_base.style.x,
+         y: this.cannon_base.style.y-height*2.25 ,
+         anchorX: width/2,
+         anchorY: height*5/2,
+         scale:.75,
+         zIndex: -1
       });
       this.addSubview(this.cannon_top);
       
@@ -73,7 +78,7 @@ exports = Class(ui.View, function (supr) {
       this.rotate = bind(this,function(){
             console.log("rotating");
             return animate(this.cannon_top).
-            now({r: (this.cannon_top.style.r)+(Math.PI*2)}, 1000, animate.linear);
+            now({r: (this.cannon_top.style.r)+(Math.PI*2)}, 100, animate.linear);
       });
       // Testing rotation animation
       var foreverRotate = bind(this,function(){
@@ -81,12 +86,22 @@ exports = Class(ui.View, function (supr) {
       });
       
       this.rotateTo = bind(this,function(x,y,t){
-         if (x>0&& y>0){
-            return animate(this.cannon_top).
-            now({r: Math.atan2(y,x)}, t, animate.linear);
+         /*
+         return animate(this.cannon_top).
+         now({r: Math.atan2(this.cannon_top.style.y-y,this.cannon_top.style.x-x)}, t, animate.linear);
+         */
+         /*
+         this.cannon_top.style.r = Math.PI*3/2+Math.atan(this.cannon_top.style.y-y,this.cannon_top.style.x-x);
+         */
+         var r = Math.atan2(1364-y,382-x)-Math.PI/2;
+         if (t){
+            return animate(this.cannon_top).now({r: r}, t, animate.linear);
          } else {
+            this.cannon_top.style.r = r;
+            return animate(this.cannon_top);
          }
       });
+      //foreverRotate();
       
 	};
    

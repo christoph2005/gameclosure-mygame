@@ -9,6 +9,7 @@ import ui.ImageView;
 import ui.TextView;
 import src.Gem as Gem;
 import src.Cannon as Cannon;
+import src.HexGrid as HexGrid;
 
 /* Some game constants.
  */
@@ -20,7 +21,8 @@ var score = 0,
 		game_length = 20000, //20 secs
 		countdown_secs = game_length / 1000,
 		lang = 'en',
-      sw = 768, sh = 1364;
+      sw = 768, sh = 1364,
+      ticks = 0, startTime = new Date();
 
 /* The GameScreen view is a child of the main application.
  * By adding the scoreboard and the gamescreen as it's children,
@@ -107,14 +109,20 @@ exports = Class(ui.View, function (supr) {
          zIndex: 99999999
 		});
       
+      var cannon = new Cannon();
+      this.addSubview(cannon);
+      
       this._gems = [];
       var gem = new Gem();
       this._gems.push(gem);
       this.addSubview(gem);
+      this.moveGemToCannon = function()   {
+         return gem.moveTo(cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50);
+      }; 
+      this.moveGemToMouse = bind(this,function(){gem.moveToFor(this.mouseX,this.mouseY,3000)});
       
-      var cannon = new Cannon();
-      this.addSubview(cannon);
-      
+      this.gridView = new HexGrid({});
+      this.addSubview(this.gridView);
       
       this.inputView = new ui.View({
          superview: this.view,
@@ -126,10 +134,18 @@ exports = Class(ui.View, function (supr) {
       });
       this.addSubview(this.inputView);
       
-      this.inputView.on('InputMove', bind(this, function (event,point) {
+      this.inputView.on('InputStart', bind(this, function (event,point) {
          this.mouseX = point.x;
          this.mouseY = point.y;
          cannon.rotateTo(this.mouseX,this.mouseY,100);
+         this.moveGemToCannon().then(this.moveGemToMouse)
+            
+         
+      }));
+      this.inputView.on('InputMove', bind(this, function (event,point) {
+         this.mouseX = point.x;
+         this.mouseY = point.y;
+         cannon.rotateTo(this.mouseX,this.mouseY);
       }));
       
       
@@ -188,7 +204,8 @@ function play_game () {
 
 /* tick*/
 function tick () {
-   
+   var elapsedTime = (Date.now()-startTime)/1000;
+   console.log(elapsedTime+" "+(++ticks)+" GAME ticks...");
 }
 
 /* Updates the countdown timer, pad out leading zeros.*/

@@ -47,20 +47,17 @@ exports = Class(ui.View, function (supr) {
          return new ui.ImageView({
             superview: this.view,
             image: img,
-            x: 0-sx,
-            y: 600-sy,
+            x: -sx,
+            y: -sy,
             scale:1,
             width: w,
-            height: h
+            height: h,
+            zIndex:0
          });
       }
 		this.gemView = new gem('blue');
       this._animator = animate(this.gemView);
       this.addSubview(this.gemView);
-      /*
-      this.blue.style.x = this.blue.style.x+500;
-      console.log(this.blue);
-      */
      
 		//var sound = soundcontroller.getSound();
       
@@ -71,29 +68,14 @@ exports = Class(ui.View, function (supr) {
       
       // Move instantly
       this.moveTo = bind(this,function(x,y) {
-         return this._animator.now({x: x, y: y}, 0, animate.linear);
+         return this._animator.now({x: x-this.style.width/2, y: y-this.style.height/2}, 0, animate.linear);
       })
       
       // Move over time
       this.moveToFor = bind(this,function(x,y,t) {
-         return this._animator.now({x: x, y: y}, t, animate.linear);
+         return this._animator.now({x: x-this.style.width/2, y: y-this.style.height/2}, t, animate.linear);
       })
       
-      /*
-        if (this.activeMole === false) {
-    this.activeMole = true;
-    this.activeInput = true;
-
-    this._animator.now({y: mole_up}, 500, animate.EASE_IN)
-      .wait(1000).then(bind(this, function () {
-        this.activeInput = false;
-      })).then({y: mole_down}, 200, animate.EASE_OUT)
-      .then(bind(this, function () {
-        this.activeMole = false;
-      }));
-  }
-};
-*/
 
 	};
    
