@@ -119,7 +119,14 @@ exports = Class(ui.View, function (supr) {
       
       
       this.moveGemToCannon = function()   {return gem.moveTo(cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50);}; 
-      this.moveGemToMouse = bind(this,function(){gem.moveToFor(this.mouseX,this.mouseY,500)});
+      this.moveGemToMouse = bind(this,function(){
+         console.log("Gem: -----------------: "+gem);
+         console.log(gem);
+         
+         var mx = this.mouseX, my = this.mouseY;
+         
+         gem.moveToFor(mx,my,1000);
+      });
       
       this.gridView = new HexGrid({});
       this.addSubview(this.gridView);
