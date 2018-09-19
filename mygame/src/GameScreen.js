@@ -112,17 +112,29 @@ exports = Class(ui.View, function (supr) {
       var cannon = new Cannon();
       this.addSubview(cannon);
       
-      this._gems = [];
+      this.gems = [];
       var gem = new Gem();
-      this._gems.push(gem);
+      this.gems.push(gem);
       this.addSubview(gem);
-      this.moveGemToCannon = function()   {
-         return gem.moveTo(cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50);
-      }; 
-      this.moveGemToMouse = bind(this,function(){gem.moveToFor(this.mouseX,this.mouseY,3000)});
+      
+      
+      this.moveGemToCannon = function()   {return gem.moveTo(cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50);}; 
+      this.moveGemToMouse = bind(this,function(){gem.moveToFor(this.mouseX,this.mouseY,500)});
       
       this.gridView = new HexGrid({});
       this.addSubview(this.gridView);
+      
+      for(var x=0; x<10; x++){
+         for(var y=0; y<10; y++){
+            var point = this.gridView.points[x][y];
+            var newGem = new Gem();
+            this.addSubview(newGem);
+            this.gems.push(newGem);
+            newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
+            
+         }
+      }
+      console.log(this.gridView);
       
       this.inputView = new ui.View({
          superview: this.view,
@@ -138,7 +150,7 @@ exports = Class(ui.View, function (supr) {
          this.mouseX = point.x;
          this.mouseY = point.y;
          cannon.rotateTo(this.mouseX,this.mouseY,100);
-         this.moveGemToCannon().then(this.moveGemToMouse)
+         this.moveGemToCannon().then(this.moveGemToMouse);
             
          
       }));
