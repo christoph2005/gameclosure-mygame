@@ -139,7 +139,6 @@ exports = Class(ui.View, function (supr) {
             
             // Watch the gem to see where it goes...
             var gemWatchIntervalID = setInterval(bind(this,function(){
-               /*
                for (var g in this.gems){
                   var dx = gem.style.x-this.gems[g].style.x,
                       dy = gem.style.y-this.gems[g].style.y;
@@ -150,7 +149,6 @@ exports = Class(ui.View, function (supr) {
                      this.gems[g].setImage()
                   }
                }
-               */
             }),1);
             
             // Launch the gem in direction of the cannon
