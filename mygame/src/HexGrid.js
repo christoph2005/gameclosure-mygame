@@ -15,7 +15,7 @@ exports = Class(ui.View, function (supr) {
          width: 768 - 100,
          height: 1364*.80 - 100,
          zIndex:9999999999999,
-         opacity: 0.05
+         opacity: 0.4
 		});
 
 		supr(this, 'init', [opts]);

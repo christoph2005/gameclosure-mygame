@@ -128,7 +128,7 @@ exports = Class(ui.View, function (supr) {
       });
       
       for(var x=0; x<10; x++){
-         for(var y=0; y<10; y++){
+         for(var y=0; y<6; y++){
             var point = this.gridView.points[x][y];
             var newGem = new Gem();
             newGem.gridX = x;
@@ -142,7 +142,7 @@ exports = Class(ui.View, function (supr) {
       }
       
       this.fireGem = bind(this,function(){   
-         this.moveGemToCannon().then(bind(this,function(){
+         this.moveGemToCannon().wait(100).then(bind(this,function(){
          this.addSubview(gem);
             // Calculate direction (using cannon angle)
             var theta = cannon.cannon_top.style.r;
@@ -159,14 +159,34 @@ exports = Class(ui.View, function (supr) {
                   var dx = gem.style.x-this.gems[g].style.x,
                       dy = gem.style.y-this.gems[g].style.y;
                   var dist = Math.sqrt(dx*dx +dy*dy);
-                  if (dist<this.gridView.gridSize){
+                  var sx = gem.style.width,
+                      sy = gem.style.height;
+                  if (dist<Math.sqrt(sx*sx+sy*sy)){
                      gem._animator.clear();
                      var other = this.gems[g];
                      other.setImage();
                      
                      var newGem = new Gem();
-                     newGem.gridX = other.gridX+1;
-                     newGem.gridY = other.gridY+1;
+                     newGem.gridX = other.gridX;
+                     newGem.gridY = other.gridY;
+                     
+                     newGem.gridY+=1;
+                     console.log("other.style.x: "+other.style.x);
+                     console.log("gem.style.x: "+gem.style.x);
+                     if(gem.style.x>other.style.x){
+                        if(0 == newGem.gridY%2){
+                           // Even
+                           // Ball attaches on the left, by default default (due to the nature of the grid)
+                           newGem.gridX+=1;
+                        }
+                     } else {
+                        if(newGem.gridY%2){
+                           // Odd
+                           // Ball attaches on the right, by default (due to the nature of the grid)
+                           newGem.gridX-=1;
+                        }
+                     }
+                   
                      this.addSubview(newGem);
                      this.gems.push(newGem);
                      var point = this.gridView.points[newGem.gridX][newGem.gridY];
@@ -175,13 +195,6 @@ exports = Class(ui.View, function (supr) {
                      clearInterval(gemWatchIntervalID);
                      this.removeSubview(gem);
                      break;
-                     /*
-                     if(gem.style.x>other.style.x){
-                        new Gem
-                     } else {
-                     
-                     }
-                     */
                   }
                }
             }),1);
