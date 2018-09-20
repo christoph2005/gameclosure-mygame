@@ -10,16 +10,16 @@ var blue_img = new Image({url: "resources/images/bubbles/bubbles/ball_blue.png"}
 	 red_img = new Image({url: "resources/images/bubbles/bubbles/ball_red.png"}),
 	 yellow_img = new Image({url: "resources/images/bubbles/bubbles/ball_yellow.png"});
     
-exports = Class(ui.View, function (supr) {
+exports = Class(ui.ImageView, function (supr) {
 
 	this.init = function (opts) {
 		opts = merge(opts, {
+         superview: this.view,
 			width:	blue_img.getWidth(),
-			height: blue_img.getHeight(),
+			height: blue_img.getHeight()
 		});
 
 		supr(this, 'init', [opts]);
-
 		this.build();
 	};
 
@@ -27,7 +27,18 @@ exports = Class(ui.View, function (supr) {
 	 * Layout
 	 */
 	this.build = function () {
-
+      this.view = new ui.ImageView({
+         superview: this,
+         image: blue_img,
+         x:0,//-blue_img.getWidth(),
+         y:0,//-blue_img.getHeight(),
+         scale:1,
+         width:blue_img.getWidth(),
+         height:blue_img.getHeight(),
+         zIndex: 0
+      });
+      this._animator = animate(this);
+/*
       function gem(color){
          var w = blue_img.getWidth(),
              h = blue_img.getHeight(),
@@ -59,7 +70,7 @@ exports = Class(ui.View, function (supr) {
 		this.gemView = new gem('blue');
       this._animator = animate(this.gemView);
       this.addSubview(this.gemView);
-     
+     */
 		//var sound = soundcontroller.getSound();
       
       // Template for other move functions

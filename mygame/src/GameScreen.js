@@ -175,6 +175,7 @@ exports = Class(ui.View, function (supr) {
             var newGem = new Gem();
             this.addSubview(newGem);
             this.gems.push(newGem);
+            console.log("gridView X: "+this.gridView.style.x);
             newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
             
          }
