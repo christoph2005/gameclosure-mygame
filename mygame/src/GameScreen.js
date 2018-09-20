@@ -125,52 +125,44 @@ exports = Class(ui.View, function (supr) {
          
          gem.moveToFor(mx,my,1000);
       });
-      this.fireGem = bind(this,function(){
-         this.moveGemToCannon();
-         
-         // Calculate direction
-         
-         /* Calculated with mouse position (not very reliable)
-         var mx = this.mouseX, my = this.mouseY;
-         var rx0 = gem.gemView.style.x,
-             ry0 = gem.gemView.style.y;
-         */
-         /* Calculated using cannon angle (more reliable); */
-         var known_cannon_base_location_x = cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,
-             known_cannon_base_location_y = cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50;
-         
-         var theta = cannon.cannon_top.style.r;
-         if (!theta) theta = 0;
-         
-         var R = 1000;
-         var rx = R*Math.cos(theta-Math.PI/2)+known_cannon_base_location_x,
-             ry = R*Math.sin(theta-Math.PI/2)+known_cannon_base_location_y;
-         
-         
-         // Watch the gem to see where it goes...
-         var gemWatchIntervalID = setInterval(bind(this,function(){
-            for (var g in this.gems){
-               var gx = this.gems[g].style.x,
-                   gy = this.gems[g].style.y;
-               var dx = gem.style.x-gx,
-                   dy = gem.style.y-gy;
-               var dist = Math.sqrt(dx*dx +dy*dy);
-               if (dist<this.gridView.gridSize){
-                  //console.log("derped one: ");
-                  //console.log(this.gems[g]);
-                  this.gems[g].setImage()
+      this.fireGem = bind(this,function(){   
+         this.moveGemToCannon().then(bind(this,function(){
+            // Calculate direction (using cannon angle)
+            
+            var theta = cannon.cannon_top.style.r;
+            if (!theta) theta = 0;
+            
+            var R = 1000;
+            var rx = R*Math.cos(theta-Math.PI/2)+gem.style.x,
+                ry = R*Math.sin(theta-Math.PI/2)+gem.style.y;
+            
+            
+            // Watch the gem to see where it goes...
+            var gemWatchIntervalID = setInterval(bind(this,function(){
+               /*
+               for (var g in this.gems){
+                  var dx = gem.style.x-this.gems[g].style.x,
+                      dy = gem.style.y-this.gems[g].style.y;
+                  var dist = Math.sqrt(dx*dx +dy*dy);
+                  if (dist<this.gridView.gridSize){
+                     //console.log("derped one: ");
+                     //console.log(this.gems[g]);
+                     this.gems[g].setImage()
+                  }
                }
-            }
-         }),1);
-         
-         // Launch the gem in direction of the cannon
-         gem.moveToFor(rx,ry,2000).then(bind(this,function(){
-            clearInterval(gemWatchIntervalID);
+               */
+            }),1);
+            
+            // Launch the gem in direction of the cannon
+            gem.moveToFor(rx,ry,2000).then(bind(this,function(){
+               clearInterval(gemWatchIntervalID);
+            }));
          }));
-         
-         
-         
       });
+      //Fire the gem to test...
+      setTimeout(bind(this,function(){
+         this.fireGem();
+      }),2000);
       
       this.gridView = new HexGrid({});
       this.addSubview(this.gridView);
