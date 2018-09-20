@@ -15,7 +15,7 @@ exports = Class(ui.View, function (supr) {
 	this.init = function (opts) {
 		opts = merge(opts, {
 			width:	blue_img.getWidth(),
-			height: blue_img.getHeight()
+			height: blue_img.getHeight(),
 		});
 
 		supr(this, 'init', [opts]);
@@ -27,6 +27,7 @@ exports = Class(ui.View, function (supr) {
 	 * Layout
 	 */
 	this.build = function () {
+
       function gem(color){
          var w = blue_img.getWidth(),
              h = blue_img.getHeight(),

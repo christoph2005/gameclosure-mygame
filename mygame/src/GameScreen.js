@@ -118,16 +118,54 @@ exports = Class(ui.View, function (supr) {
       this.addSubview(gem);
       
       
-      this.moveGemToCannon = function()   {return gem.moveTo(cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50);}; 
+      this.moveGemToCannon = function(){return gem.moveTo(cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50);}; 
       this.moveGemToMouse = bind(this,function(){
-         console.log("Gem: -----------------: "+gem);
-         console.log(gem);
          
          var mx = this.mouseX, my = this.mouseY;
          
          gem.moveToFor(mx,my,1000);
       });
-      
+      this.fireGem = bind(this,function(){
+         console.log("firing gem");
+         this.moveGemToCannon();
+         
+         // Calculate direction
+         
+         /* Calculated with mouse position (not very reliable)
+         var mx = this.mouseX, my = this.mouseY;
+         var rx0 = gem.gemView.style.x,
+             ry0 = gem.gemView.style.y;
+         */
+         /* Calculated using cannon angle (more reliable); */
+         var known_cannon_base_location_x = cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,
+             known_cannon_base_location_y = cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50;
+         
+         var theta = cannon.cannon_top.style.r;
+         if (!theta) theta = 0;
+         
+         console.log(gem);
+         var R = 1000;
+         var rx = R*Math.cos(theta-Math.PI/2)+known_cannon_base_location_x,
+             ry = R*Math.sin(theta-Math.PI/2)+known_cannon_base_location_y;
+         
+         
+         // Watch the gem to see where it goes...
+         var gemWatchIntervalID = setInterval(bind(this,function(){
+            
+         }),1);
+         
+         // Launch the gem in direction of the cannon
+         gem.moveToFor(rx,ry,2000).then(bind(this,function(){
+            for (var g in this.gems){
+               
+            }
+         }));
+         
+         
+         
+      });
+      //Fire the gem to test stuff
+      this.fireGem();
       this.gridView = new HexGrid({});
       this.addSubview(this.gridView);
       
@@ -141,7 +179,8 @@ exports = Class(ui.View, function (supr) {
             
          }
       }
-      console.log(this.gridView);
+      // Print grid object for debugging
+      //console.log(this.gridView);
       
       this.inputView = new ui.View({
          superview: this.view,
@@ -223,8 +262,8 @@ function play_game () {
 
 /* tick*/
 function tick () {
-   var elapsedTime = (Date.now()-startTime)/1000;
-   console.log(elapsedTime+" "+(++ticks)+" GAME ticks...");
+   //var elapsedTime = (Date.now()-startTime)/1000;
+   //console.log(elapsedTime+" "+(++ticks)+" GAME ticks...");
 }
 
 /* Updates the countdown timer, pad out leading zeros.*/
