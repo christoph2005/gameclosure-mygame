@@ -37,6 +37,7 @@ exports = Class(ui.ImageView, function (supr) {
          height:blue_img.getHeight(),
          zIndex: 0
       });
+      
       this._animator = animate(this);
       
 		//var sound = soundcontroller.getSound();

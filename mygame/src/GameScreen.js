@@ -114,9 +114,10 @@ exports = Class(ui.View, function (supr) {
       
       this.gems = [];
       var gem = new Gem();
-      this.gems.push(gem);
-      this.addSubview(gem);
       
+      
+      this.gridView = new HexGrid({});
+      this.addSubview(this.gridView);
       
       this.moveGemToCannon = function(){return gem.moveTo(cannon.cannon_base.style.x+cannon.cannon_base.style.width/2,cannon.cannon_base.style.y+cannon.cannon_base.style.height/2-50);}; 
       this.moveGemToMouse = bind(this,function(){
@@ -125,10 +126,25 @@ exports = Class(ui.View, function (supr) {
          
          gem.moveToFor(mx,my,1000);
       });
+      
+      for(var x=0; x<10; x++){
+         for(var y=0; y<10; y++){
+            var point = this.gridView.points[x][y];
+            var newGem = new Gem();
+            newGem.gridX = x;
+            newGem.gridY = y;
+            this.addSubview(newGem);
+            this.gems.push(newGem);
+            newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
+            
+            
+         }
+      }
+      
       this.fireGem = bind(this,function(){   
          this.moveGemToCannon().then(bind(this,function(){
+         this.addSubview(gem);
             // Calculate direction (using cannon angle)
-            
             var theta = cannon.cannon_top.style.r;
             if (!theta) theta = 0;
             
@@ -144,9 +160,28 @@ exports = Class(ui.View, function (supr) {
                       dy = gem.style.y-this.gems[g].style.y;
                   var dist = Math.sqrt(dx*dx +dy*dy);
                   if (dist<this.gridView.gridSize){
-                     //console.log("derped one: ");
-                     //console.log(this.gems[g]);
-                     this.gems[g].setImage()
+                     gem._animator.clear();
+                     var other = this.gems[g];
+                     other.setImage();
+                     
+                     var newGem = new Gem();
+                     newGem.gridX = other.gridX+1;
+                     newGem.gridY = other.gridY+1;
+                     this.addSubview(newGem);
+                     this.gems.push(newGem);
+                     var point = this.gridView.points[newGem.gridX][newGem.gridY];
+                     //console.log("gridViewPoins?: "+this.gridview.points);
+                     newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
+                     clearInterval(gemWatchIntervalID);
+                     this.removeSubview(gem);
+                     break;
+                     /*
+                     if(gem.style.x>other.style.x){
+                        new Gem
+                     } else {
+                     
+                     }
+                     */
                   }
                }
             }),1);
@@ -162,20 +197,6 @@ exports = Class(ui.View, function (supr) {
          this.fireGem();
       }),2000);
       
-      this.gridView = new HexGrid({});
-      this.addSubview(this.gridView);
-      
-      for(var x=0; x<10; x++){
-         for(var y=0; y<10; y++){
-            var point = this.gridView.points[x][y];
-            var newGem = new Gem();
-            this.addSubview(newGem);
-            this.gems.push(newGem);
-            newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
-            
-            
-         }
-      }
       // Print grid object for debugging
       //console.log(this.gridView);
       

@@ -48,7 +48,7 @@ exports = Class(ui.View, function (supr) {
       this.points = [];
       for(var x=0; x<10; x++){
          this.points.push([]);
-         for(var y=0; y<10; y++){
+         for(var y=0; y<15; y++){
             this.points[x].push(new this.point(x,y));
          }
       }
