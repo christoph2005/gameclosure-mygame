@@ -38,40 +38,11 @@ exports = Class(ui.ImageView, function (supr) {
          zIndex: 0
       });
       this._animator = animate(this);
-/*
-      function gem(color){
-         var w = blue_img.getWidth(),
-             h = blue_img.getHeight(),
-             sx = 0-w,  
-             sy = 0-h;
-             var img;
-             if (color == 'blue'){
-               img = blue_img;
-             } else if (color == 'green'){
-               img = green_img;
-             } else if (color == 'purple'){
-               img = purple_img;
-             } else if (color == 'red'){
-               img = red_img;
-             } else {
-               img = yellow_img;
-             } 
-         return new ui.ImageView({
-            superview: this.view,
-            image: img,
-            x: -sx,
-            y: -sy,
-            scale:1,
-            width: w,
-            height: h,
-            zIndex:0
-         });
-      }
-		this.gemView = new gem('blue');
-      this._animator = animate(this.gemView);
-      this.addSubview(this.gemView);
-     */
+      
 		//var sound = soundcontroller.getSound();
+      this.setImage = bind(this,function(){
+         this.view.setImage(green_img);
+      });
       
       // Template for other move functions
       this.move = bind(this,function() {

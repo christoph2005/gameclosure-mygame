@@ -126,7 +126,6 @@ exports = Class(ui.View, function (supr) {
          gem.moveToFor(mx,my,1000);
       });
       this.fireGem = bind(this,function(){
-         console.log("firing gem");
          this.moveGemToCannon();
          
          // Calculate direction
@@ -143,7 +142,6 @@ exports = Class(ui.View, function (supr) {
          var theta = cannon.cannon_top.style.r;
          if (!theta) theta = 0;
          
-         console.log(gem);
          var R = 1000;
          var rx = R*Math.cos(theta-Math.PI/2)+known_cannon_base_location_x,
              ry = R*Math.sin(theta-Math.PI/2)+known_cannon_base_location_y;
@@ -151,21 +149,29 @@ exports = Class(ui.View, function (supr) {
          
          // Watch the gem to see where it goes...
          var gemWatchIntervalID = setInterval(bind(this,function(){
-            
+            for (var g in this.gems){
+               var gx = this.gems[g].style.x,
+                   gy = this.gems[g].style.y;
+               var dx = gem.style.x-gx,
+                   dy = gem.style.y-gy;
+               var dist = Math.sqrt(dx*dx +dy*dy);
+               if (dist<this.gridView.gridSize){
+                  //console.log("derped one: ");
+                  //console.log(this.gems[g]);
+                  this.gems[g].setImage()
+               }
+            }
          }),1);
          
          // Launch the gem in direction of the cannon
          gem.moveToFor(rx,ry,2000).then(bind(this,function(){
-            for (var g in this.gems){
-               
-            }
+            clearInterval(gemWatchIntervalID);
          }));
          
          
          
       });
-      //Fire the gem to test stuff
-      this.fireGem();
+      
       this.gridView = new HexGrid({});
       this.addSubview(this.gridView);
       
@@ -175,8 +181,8 @@ exports = Class(ui.View, function (supr) {
             var newGem = new Gem();
             this.addSubview(newGem);
             this.gems.push(newGem);
-            console.log("gridView X: "+this.gridView.style.x);
             newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
+            
             
          }
       }
@@ -197,8 +203,8 @@ exports = Class(ui.View, function (supr) {
          this.mouseX = point.x;
          this.mouseY = point.y;
          cannon.rotateTo(this.mouseX,this.mouseY,100);
-         this.moveGemToCannon().then(this.moveGemToMouse);
-            
+         //this.moveGemToCannon().then(this.moveGemToMouse);
+         this.fireGem();   
          
       }));
       this.inputView.on('InputMove', bind(this, function (event,point) {
