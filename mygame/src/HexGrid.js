@@ -11,13 +11,13 @@ exports = Class(ui.View, function (supr) {
          superview: this.view,
          backgroundColor: "#FF0000",
          x: 50,
-         y: 50,
+         y: 200,
          width: 768 - 100,
          height: 1364*.80 - 100,
          zIndex:9999999999999,
-         opacity: 0.4
+         opacity: 0.05
 		});
-
+   
 		supr(this, 'init', [opts]);
 		
       this.build();

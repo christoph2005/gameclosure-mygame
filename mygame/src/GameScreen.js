@@ -54,7 +54,7 @@ exports = Class(ui.View, function (supr) {
 			layout: "box",
          width: sw,
          height: 275,
-         //image: "resources/images/bubbles/ui/bg1_header.png",
+         image: "resources/images/bubbles/ui/bg1_header.png",
          zIndex: 999999
       });
       
@@ -225,8 +225,6 @@ exports = Class(ui.View, function (supr) {
 
                         return;
                      }
-                     console.log("newGem.gridX: "+newGem.gridX);
-                     console.log("newGem.gridY: "+newGem.gridY);
                      
                      this.gemMapToHex[newGem.gridX][newGem.gridY] = newGem;
                      this.addSubview(newGem);
@@ -326,6 +324,8 @@ exports = Class(ui.View, function (supr) {
                         var matchingGems = []
                         CCH(newGem,matchingGems);
                         if(matchingGems.length>=3){
+                           score+= matchingGems.length;
+                           this._scoreboard.setText(score.toString());
                            count = 0;
                            for(var e of matchingGems){
                               count++;
@@ -524,7 +524,7 @@ function reset_game () {
 
 function get_end_message (score, isHighScore) {
 	var moles = (score === 1) ? text.MOLE : text.MOLES,
-			end_msg = text.END_MSG_START + ' ' + score + ' ' + moles + '.\n';
+			end_msg = text.END_MSG_START + '.\n';
 
 	if (isHighScore) {
 		end_msg += text.HIGH_SCORE + '\n';
@@ -541,9 +541,9 @@ var localized_strings = {
 		READY: "Ready ...",
 		SET: "Set ...",
 		GO: "GO!",
-		MOLE: "mole",
-		MOLES: "moles",
-		END_MSG_START: "You whacked",
+		MOLE: "",
+		MOLES: "",
+		END_MSG_START: "",
 		END_MSG_END: "Tap to play again",
 		HIGH_SCORE: "That's a new high score!"
 	}
