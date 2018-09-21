@@ -54,7 +54,7 @@ exports = Class(ui.View, function (supr) {
 			layout: "box",
          width: sw,
          height: 275,
-         image: "resources/images/bubbles/ui/bg1_header.png",
+         //image: "resources/images/bubbles/ui/bg1_header.png",
          zIndex: 999999
       });
       
@@ -112,7 +112,6 @@ exports = Class(ui.View, function (supr) {
       var cannon = new Cannon();
       this.addSubview(cannon);
       
-      this.gems = [];
       var gem = new Gem();
       
       
@@ -127,7 +126,10 @@ exports = Class(ui.View, function (supr) {
          gem.moveToFor(mx,my,1000);
       });
       
+      this.gems = [];
+      this.gemMapToHex = [];
       for(var x=0; x<10; x++){
+         this.gemMapToHex.push([null,null,null,null,null,null,null,null,null,null]);
          for(var y=0; y<6; y++){
             var point = this.gridView.points[x][y];
             var newGem = new Gem();
@@ -135,6 +137,7 @@ exports = Class(ui.View, function (supr) {
             newGem.gridY = y;
             this.addSubview(newGem);
             this.gems.push(newGem);
+            this.gemMapToHex[x][y] = newGem;
             newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
             
             
@@ -190,59 +193,115 @@ exports = Class(ui.View, function (supr) {
                      this.addSubview(newGem);
                      this.removeSubview(gem);
                      this.gems.push(newGem);
+                     this.gemMapToHex[newGem.gridX][newGem.gridY] = newGem;
                      var point = this.gridView.points[newGem.gridX][newGem.gridY];
                      //console.log("gridViewPoins?: "+this.gridview.points);
                      newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
-                     newGem.setImage(bullet_color);
+                     gem.moveTo(-900,-900);
                      
                      //Check for a combo
+                     var bullet_color = gem.getImage();
+                     newGem.setImage(bullet_color);
                      this.checkCombo = bind(this,function(){
-                        var bullet_color = gem.getImage();
-                        // Gem Neighbors:
-                        var UL,UR,L,R,LL,LR;
-                        this.CCH = bind(this,function(){
-                           if(newGem.gridY%2) {
+                        for(var i in this.gems){
+                           this.gems[i].visited = false;
+                        }
+                        var CCH = bind(this,function(curGem,matchingGems){
+                           if(!curGem || typeof curGem == "undefined" ||curGem.visited) return false;
+                           curGem.visited = true;
+                           var x = curGem.gridX;
+                           var y = curGem.gridY;
+                           // Gem Neighbors:
+                           var UL={},UR={},L={},R={},LL={},LR={}  ;
+                           if(1 == y % 2) {
                               
-                              UL.x = newGrid.gridX;
-                              UL.y = newGrid.gridY-1;
+                              UL.x = x;
+                              UL.y = y-1;
                               
-                              UR.x = newGrid.gridX+1;
-                              UR.y = newGrid.gridY-1;
+                              UR.x = x+1;
+                              UR.y = y-1;
                               
-                              L.x = newGrid.gridX-1;
-                              L.y = newGrid.gridY;
+                              L.x = x-1;
+                              L.y = y;
                               
-                              R.x = newGrid.gridX+1;
-                              R.y = newGrid.gridY;
+                              R.x = x+1;
+                              R.y = y;
                               
-                              LL.x = newGrid.gridX;
-                              LL.y = newGrid.gridY+1;
+                              LL.x = x;
+                              LL.y = y+1;
                               
-                              LR.x = newGrid.gridX+1;
-                              LR.y = newGrid.gridY+1;
+                              LR.x = x+1;
+                              LR.y = y+1;
                            } else {
                               
-                              UL.x = newGrid.gridX-1;
-                              UL.y = newGrid.gridY-1;
+                              UL.x = x-1;
+                              UL.y = y-1;
                               
-                              UR.x = newGrid.gridX;
-                              UR.y = newGrid.gridY-1;
+                              UR.x = x;
+                              UR.y = y-1;
                               
-                              L.x = newGrid.gridX-1;
-                              L.y = newGrid.gridY;
+                              L.x = x-1;
+                              L.y = y;
                               
-                              R.x = newGrid.gridX+1;
-                              R.y = newGrid.gridY;
+                              R.x = x+1;
+                              R.y = y;
                               
-                              LL.x = newGrid.gridX-1;
-                              LL.y = newGrid.gridY+1;
+                              LL.x = x-1;
+                              LL.y = y+1;
                               
-                              LR.x = newGrid.gridX;
-                              LR.y = newGrid.gridY+1;
+                              LR.x = x;
+                              LR.y = y+1;
                            }
+                           
+                           if( UL.x>=0 && UL.x<this.gemMapToHex.length && UL.y >= 0 && y<this.gemMapToHex[UL.x].length)
+                              UL.gem = this.gemMapToHex[UL.x][UL.y];
+                           if( UR.x>=0 && UR.x<this.gemMapToHex.length && UR.y >= 0 && y<this.gemMapToHex[UR.x].length)
+                              UR.gem = this.gemMapToHex[UR.x][UR.y]
+                           if( L.x>=0 && L.x<this.gemMapToHex.length && L.y >= 0 && y<this.gemMapToHex[L.x].length)
+                              L.gem = this.gemMapToHex[L.x][L.y];
+                           if( R.x>=0 && R.x<this.gemMapToHex.length && R.y >= 0 && y<this.gemMapToHex[R.x].length)
+                              R.gem = this.gemMapToHex[R.x][R.y];
+                           if( LL.x>=0 && LL.x<this.gemMapToHex.length && LL.y >= 0 && y<this.gemMapToHex[LL.x].length)
+                              LL.gem = this.gemMapToHex[LL.x][LL.y];
+                           if( LR.x>=0 && LR.x<this.gemMapToHex.length && LR.y >= 0 && y<this.gemMapToHex[LR.x].length)
+                              LR.gem = this.gemMapToHex[LR.x][LR.y];
+                           
+                        
+                        
+                        if(matchingGems.length == 0 || (curGem.getImage() == matchingGems[0].getImage())){
+                        // 6 Recursive calls...
+                        // Upper-left-match-case (and so on...)
+                              matchingGems.push(curGem);
+                           
+                           var ULMC = CCH(UL.gem,matchingGems);
+                           var URMC = CCH(UR.gem,matchingGems);
+                           var LMC = CCH(L.gem,matchingGems);
+                           var RMC = CCH(R.gem,matchingGems);
+                           var LLMC = CCH(LL.gem,matchingGems);
+                           var LRMC = CCH(LR.gem,matchingGems);
+                        } else {
+                           return false;
+                        }
+                        
                         });
+                        var matchingGems = []
+                        CCH(newGem,matchingGems);
+                        if(matchingGems.length>=3){
+                           count = 0;
+                           for(var e of matchingGems){
+                              count++;
+                              (function(){
+                                 var t = 100*count;
+                                 var g = e;
+                                 setTimeout(bind(this,function(){
+                                    g.moveTo(-999,-999);
+                                 }),t);
+                              })();
+                           }
+                        }
+                        
                      });
-                     
+                     this.checkCombo();
                      
                      
                      break;
@@ -279,9 +338,10 @@ exports = Class(ui.View, function (supr) {
          this.mouseY = point.y;
          cannon.rotateTo(this.mouseX,this.mouseY,100);
          //this.moveGemToCannon().then(this.moveGemToMouse);
-         this.fireGem();   
+         this.fireGem();
          
       }));
+      
       this.inputView.on('InputMove', bind(this, function (event,point) {
          this.mouseX = point.x;
          this.mouseY = point.y;

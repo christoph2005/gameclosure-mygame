@@ -76,7 +76,6 @@ exports = Class(ui.ImageView, function (supr) {
       this.getImage = bind(this,function(){
          var filename = this.view.getImage()._srcImg.src.split("/");
          filename = filename[filename.length-1];
-         console.log(filename);
          return filename;
       });
       
