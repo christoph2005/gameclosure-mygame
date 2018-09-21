@@ -18,7 +18,8 @@ var score = 0,
 		hit_value = 1,
 		mole_interval = 600,
 		game_on = false,
-		game_length = 20000, //20 secs
+		//game_length = 20000, //20 secs
+		game_length = 20000/5, //4 secs
 		countdown_secs = game_length / 1000,
 		lang = 'en',
       sw = 768, sh = 1364,
@@ -105,7 +106,7 @@ exports = Class(ui.View, function (supr) {
 			height: 120,
 			size: 120   ,
 			color: '#FFFFFF',
-			opacity: 0.7,
+			opacity: 0,
          zIndex: 99999999
 		});
       
@@ -113,7 +114,15 @@ exports = Class(ui.View, function (supr) {
       this.addSubview(cannon);
       
       var gem = new Gem();
-      
+      this.clean = bind(this,function(){
+         setTimeout(bind(this,function(){
+            cannon.style.x = -99999;
+         delete cannon.cannon_top;
+         delete cannon.cannon_bottom;
+         delete cannon;
+         delete gem;
+         }),500); 
+      });
       
       this.gridView = new HexGrid({});
       this.addSubview(this.gridView);
@@ -335,7 +344,6 @@ exports = Class(ui.View, function (supr) {
                                  setTimeout(bind(this,function(){
                                     g.moveTo(-999,-999);
                                     gemMap[g.gridX][g.gridY] = null;
-                                    //console.log("Index: "+this.gems.indexOf(g));
                                  }),t);
                               })(this.gemMapToHex  );
                            }
@@ -360,9 +368,11 @@ exports = Class(ui.View, function (supr) {
          }));
       });
       //Fire the gem to test...
+      /*
       setTimeout(bind(this,function(){
          this.fireGem();
       }),2000);
+      */
       
       // Print grid object for debugging
       //console.log(this.gridView);
@@ -417,11 +427,7 @@ function start_game_flow () {
 		});
 }
 
-/* With everything in place, the actual game play is quite simple.
- * Summon a non-active mole every n seconds. If it's hit, an event
- * handler on the molehill updates the score. After a set timeout,
- * stop calling the moles and proceed to the end game.
- */
+
 function play_game () {
 	var i = setInterval(tick.bind(this), mole_interval),
 			j = setInterval(update_countdown.bind(this), 1000);
@@ -484,15 +490,15 @@ function end_game_flow () {
 	}
 
 	this._scoreboard.setText(end_msg);
-/* Just don't bother "ending" the game for now...
+   
 	//slight delay before allowing a tap reset
-	setTimeout(emit_endgame_event.bind(this), 200);
-   */
+	setTimeout(emit_endgame_event.bind(this), 1500);
 }
 
 /* Tell the main app to switch back to the title screen.
  */
 function emit_endgame_event () {
+   
 	this.once('InputSelect', function () {
 		reset_game.call(this);
 		this.emit('gamescreen:end');
@@ -516,6 +522,13 @@ function reset_game () {
 		visible: false,
 		color: '#fff'
 	});
+   
+   for (var g of this.gems){
+      g.moveTo(300,-700);
+      delete g;
+   }
+   this.clean();
+   this.build();
 }
 
 /*
