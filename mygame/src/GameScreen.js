@@ -138,13 +138,38 @@ exports = Class(ui.View, function (supr) {
             this.addSubview(newGem);
             this.gems.push(newGem);
             this.gemMapToHex[x][y] = newGem;
+            
+            switch(Math.floor(Math.random()*5)){
+               
+               case 0:
+                  newGem.setImage("ball_blue.png");
+               break;
+               
+               case 1:
+                  newGem.setImage("ball_red.png");
+               break;
+               
+               case 2:
+                  newGem.setImage("ball_yellow.png");
+               break;
+               
+               case 3:
+                  newGem.setImage("ball_purple.png");
+               break;
+               
+               default:
+                  newGem.setImage("ball_green.png");
+               break;
+            }
             newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
             
             
          }
       }
       
-      this.fireGem = bind(this,function(){   
+      this.fireGem = bind(this,function(){
+         if (gem.inUse) return;
+         gem.inUse = true;
          this.moveGemToCannon().wait(100).then(bind(this,function(){
          this.addSubview(gem);
             // Calculate direction (using cannon angle)
@@ -190,14 +215,28 @@ exports = Class(ui.View, function (supr) {
                            newGem.gridX-=1;
                         }
                      }
-                     this.addSubview(newGem);
-                     this.removeSubview(gem);
-                     this.gems.push(newGem);
+                     
+                     if( newGem.gridX<0 || newGem.gridX>=this.gemMapToHex.length || newGem.gridY < 0 || newGem.gridY>=this.gemMapToHex[newGem.gridX].length)
+                     {
+                        delete newGem;
+                        gem.moveTo(-900,-900);
+                        this.removeSubview(gem);
+                        gem.inUse = false;
+
+                        return;
+                     }
+                     console.log("newGem.gridX: "+newGem.gridX);
+                     console.log("newGem.gridY: "+newGem.gridY);
+                     
                      this.gemMapToHex[newGem.gridX][newGem.gridY] = newGem;
+                     this.addSubview(newGem);
+                     this.gems.push(newGem);
                      var point = this.gridView.points[newGem.gridX][newGem.gridY];
                      //console.log("gridViewPoins?: "+this.gridview.points);
                      newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
                      gem.moveTo(-900,-900);
+                     this.removeSubview(gem);
+                     gem.inUse = false;
                      
                      //Check for a combo
                      var bullet_color = gem.getImage();
@@ -290,13 +329,15 @@ exports = Class(ui.View, function (supr) {
                            count = 0;
                            for(var e of matchingGems){
                               count++;
-                              (function(){
+                              (function(gemMap){
                                  var t = 100*count;
                                  var g = e;
                                  setTimeout(bind(this,function(){
                                     g.moveTo(-999,-999);
+                                    gemMap[g.gridX][g.gridY] = null;
+                                    //console.log("Index: "+this.gems.indexOf(g));
                                  }),t);
-                              })();
+                              })(this.gemMapToHex  );
                            }
                         }
                         
@@ -311,7 +352,10 @@ exports = Class(ui.View, function (supr) {
             
             // Launch the gem in direction of the cannon
             gem.moveToFor(rx,ry,2000).then(bind(this,function(){
+               if(gem.InUse) return;               
+               gem.moveTo(-900,-900);
                clearInterval(gemWatchIntervalID);
+               gem.inUse = false;
             }));
          }));
       });
