@@ -41,9 +41,6 @@ exports = Class(ui.ImageView, function (supr) {
       this._animator = animate(this);
       
 		//var sound = soundcontroller.getSound();
-      this.setImage = bind(this,function(){
-         this.view.setImage(green_img);
-      });
       
       // Template for other move functions
       this.move = bind(this,function() {
@@ -59,6 +56,29 @@ exports = Class(ui.ImageView, function (supr) {
       this.moveToFor = bind(this,function(x,y,t) {
          return this._animator.now({x: x-this.style.width/2, y: y-this.style.height/2}, t, animate.linear);
       })
+      
+      this.setImage = bind(this,function(input){
+         if(input=="ball_blue.png"){
+            this.view.setImage(blue_img);
+         } else if (input == "ball_purple.png") {
+            this.view.setImage(purple_img);
+         } else if (input == "ball_green.png") {
+            this.view.setImage(green_img);
+         } else if (input == "ball_yellow.png") {
+            this.view.setImage(yellow_img);
+         } else if (input == "ball_red.png") {
+            this.view.setImage(red_img);
+         } else {
+            this.view.setImage(green_img);
+         }
+      });
+      
+      this.getImage = bind(this,function(){
+         var filename = this.view.getImage()._srcImg.src.split("/");
+         filename = filename[filename.length-1];
+         console.log(filename);
+         return filename;
+      });
       
 
 	};

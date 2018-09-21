@@ -162,38 +162,89 @@ exports = Class(ui.View, function (supr) {
                   var sx = gem.style.width,
                       sy = gem.style.height;
                   if (dist<Math.sqrt(sx*sx+sy*sy)){
+                     clearInterval(gemWatchIntervalID);
                      gem._animator.clear();
                      var other = this.gems[g];
-                     other.setImage();
                      
+                     // Change the image of the one it collided with (for testing)
+                     // other.setImage();
+                     
+                     // Add the gem to the hexGrid at the "right spot"
                      var newGem = new Gem();
                      newGem.gridX = other.gridX;
                      newGem.gridY = other.gridY;
-                     
                      newGem.gridY+=1;
-                     console.log("other.style.x: "+other.style.x);
-                     console.log("gem.style.x: "+gem.style.x);
                      if(gem.style.x>other.style.x){
+                        //Ball should attach on right side
                         if(0 == newGem.gridY%2){
-                           // Even
-                           // Ball attaches on the left, by default default (due to the nature of the grid)
+                           // EvenY - Ball attaches on the left, by default default (due to the nature of the grid)
                            newGem.gridX+=1;
                         }
                      } else {
+                        //Ball should attach on left side
                         if(newGem.gridY%2){
-                           // Odd
-                           // Ball attaches on the right, by default (due to the nature of the grid)
+                           // OddY - Ball attaches on the right, by default (due to the nature of the grid)
                            newGem.gridX-=1;
                         }
                      }
-                   
                      this.addSubview(newGem);
+                     this.removeSubview(gem);
                      this.gems.push(newGem);
                      var point = this.gridView.points[newGem.gridX][newGem.gridY];
                      //console.log("gridViewPoins?: "+this.gridview.points);
                      newGem.moveTo(this.gridView.style.x+point.style.x,this.gridView.style.y+point.style.y);
-                     clearInterval(gemWatchIntervalID);
-                     this.removeSubview(gem);
+                     newGem.setImage(bullet_color);
+                     
+                     //Check for a combo
+                     this.checkCombo = bind(this,function(){
+                        var bullet_color = gem.getImage();
+                        // Gem Neighbors:
+                        var UL,UR,L,R,LL,LR;
+                        this.CCH = bind(this,function(){
+                           if(newGem.gridY%2) {
+                              
+                              UL.x = newGrid.gridX;
+                              UL.y = newGrid.gridY-1;
+                              
+                              UR.x = newGrid.gridX+1;
+                              UR.y = newGrid.gridY-1;
+                              
+                              L.x = newGrid.gridX-1;
+                              L.y = newGrid.gridY;
+                              
+                              R.x = newGrid.gridX+1;
+                              R.y = newGrid.gridY;
+                              
+                              LL.x = newGrid.gridX;
+                              LL.y = newGrid.gridY+1;
+                              
+                              LR.x = newGrid.gridX+1;
+                              LR.y = newGrid.gridY+1;
+                           } else {
+                              
+                              UL.x = newGrid.gridX-1;
+                              UL.y = newGrid.gridY-1;
+                              
+                              UR.x = newGrid.gridX;
+                              UR.y = newGrid.gridY-1;
+                              
+                              L.x = newGrid.gridX-1;
+                              L.y = newGrid.gridY;
+                              
+                              R.x = newGrid.gridX+1;
+                              R.y = newGrid.gridY;
+                              
+                              LL.x = newGrid.gridX-1;
+                              LL.y = newGrid.gridY+1;
+                              
+                              LR.x = newGrid.gridX;
+                              LR.y = newGrid.gridY+1;
+                           }
+                        });
+                     });
+                     
+                     
+                     
                      break;
                   }
                }
